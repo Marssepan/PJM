@@ -94,8 +94,12 @@ export function toSign(row, categorySlugByDbId) {
   const catDbId = pick(row, 'category_id', 'categoryId') ?? row.category?.id;
   return {
     id: String(row.id),
+    slug: row.slug ?? null,
+    kind: row.kind ?? 'WORD',
     name: row.name,
     description: row.description ?? '',
+    /** Feature 3: mimika — wymagany wyraz twarzy (null = brak opisu). */
+    facialExpression: pick(row, 'facialExpression', 'facial_expression') ?? null,
     category: row.category?.slug ?? categorySlugByDbId.get(catDbId) ?? '',
     videoFile: file ?? null,
     video: videoUrl(file),
@@ -112,9 +116,10 @@ export function toLetter(row) {
     letter,
     name: `Litera ${letter}`,
     dynamic,
-    description: dynamic
-      ? `Znak litery ${letter} w alfabecie palcowym PJM. Znak dynamiczny — zwróć uwagę na ruch dłoni.`
-      : `Znak litery ${letter} w alfabecie palcowym PJM. Układ statyczny — skup się na kształcie dłoni.`,
+    description: `Znak litery ${letter} w alfabecie palcowym PJM.`, // typ znaku pokazuje plakietka w SignDetails
+    /** Feature 2: ułożenie dłoni i ruch (null = opis w przygotowaniu). */
+    handshape: row.handshape ?? null,
+    movement: row.movement ?? null,
     category: 'alfabet',
     videoFile: file ?? null,
     video: videoUrl(file),

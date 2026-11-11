@@ -44,3 +44,23 @@ export const IconExpand = (p) => (
 export const IconRestart = (p) => (
   <svg {...base} {...p}><path d="M3 12a9 9 0 1 0 3-6.7" /><path d="M3 3v6h6" /></svg>
 );
+
+/* Feature 2 / 3 — ikony sekcji opisu znaku. */
+export const IconHand = (p) => (
+  <svg {...base} {...p}>
+    <path d="M8 12V5.5a1.5 1.5 0 0 1 3 0V11" />
+    <path d="M11 10.5V4a1.5 1.5 0 0 1 3 0v6.5" />
+    <path d="M14 10.5V5.5a1.5 1.5 0 0 1 3 0V13" />
+    <path d="M8 11.5 6.6 10.1a1.6 1.6 0 0 0-2.3 2.3L8 16.5c1.3 1.6 2.9 3.5 5.5 3.5h.5a5 5 0 0 0 5-5v-3.5" />
+  </svg>
+);
+export const IconFace = (p) => (
+  <svg {...base} {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M8.5 9.5h.01M15.5 9.5h.01" strokeWidth="2.25" />
+    <path d="M8.5 14.5c.9 1.2 2.1 1.8 3.5 1.8s2.6-.6 3.5-1.8" />
+  </svg>
+);
+export const IconMove = (p) => (
+  <svg {...base} {...p}><path d="M5 12h14M15 8l4 4-4 4" /><path d="M5 7v10" strokeDasharray="2 2.5" /></svg>
+);

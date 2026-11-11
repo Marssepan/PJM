@@ -10,6 +10,40 @@ const prisma = new PrismaClient();
  */
 const MOVING_LETTERS = new Set<string>(['Ą', 'Ć', 'Ę', 'J', 'Ł', 'Ń', 'Ó', 'Ś', 'Ź', 'Ż']);
 
+/**
+ * Feature 2 — opisy ułożenia dłoni (daktylologia PJM). Treść zweryfikowana przez autora projektu.
+ * Litery bez wpisu mają handshape = null — interfejs pokazuje wtedy „Opis w przygotowaniu”.
+ */
+const ALPHABET_HANDSHAPES: Record<string, string> = {
+  A: 'Dłoń zwinięta w pięść, kciuk wyprostowany i przylegający z boku do palca wskazującego.',
+  B: 'Dłoń otwarta, palce wyprostowane i złączone, kciuk zgięty, przylega do wnętrza dłoni.',
+  C: 'Palce zgięte w łuk, tworzą kształt litery C.',
+  Ć: 'Palce zgięte w łuk (jak C), dłoń wykonuje krótki ruch w dół.',
+  D: 'Palec wskazujący wyprostowany skierowany w górę, reszta palców złączona z kciukiem, tworząc kółko.',
+  E: 'Dłoń ułożona płasko, palce zgięte pod kątem prostym w stawach, kciuk przylega do boku dłoni.',
+  L: 'Kciuk i palec wskazujący wyprostowane, tworzą kształt litery L, reszta palców zwinięta w pięść.',
+  Ł: 'Ułożenie jak przy literze L, ale dłoń wykonuje krótki ruch w dół i w bok.',
+  O: 'Palce i kciuk złączone opuszkami, tworzą okrąg (kształt litery O).',
+  P: 'Kciuk i palec wskazujący wyprostowane, dłoń ułożona poziomo, palec wskazujący wskazuje w lewo (dla praworęcznych).',
+};
+
+/**
+ * Feature 3 — mimika (niemanualne elementy znaku) dla kategorii „Emocje”.
+ * Klucz = nazwa znaku w słowniku. Treść zweryfikowana przez autora projektu.
+ */
+const FACIAL_EXPRESSIONS: Record<string, string> = {
+  Radość:
+    'Szeroki, naturalny uśmiech, rozluźnione mięśnie twarzy, oczy lekko zmrużone, brwi w naturalnej pozycji lub lekko uniesione.',
+  Smutek:
+    'Kąciki ust skierowane w dół, brwi ściągnięte i lekko opuszczone, wzrok często skierowany w dół, głowa lekko pochylona.',
+  Złość:
+    'Brwi mocno ściągnięte i zmarszczone, usta zaciśnięte w wąską linię, napięte mięśnie twarzy, wzrok ostry i skupiony.',
+  Zdziwienie:
+    'Szeroko otwarte oczy, brwi wysoko uniesione, usta otwarte (często w kształt litery O), głowa lekko cofnięta.',
+  Strach:
+    'Szeroko otwarte oczy, brwi uniesione i ściągnięte do siebie, usta lekko otwarte z napiętymi kącikami, cała twarz napięta.',
+};
+
 async function main() {
   console.log('Czyszczenie bazy danych...');
   await prisma.sign.deleteMany();
@@ -24,8 +58,7 @@ async function main() {
   const uczelnia = await prisma.category.create({ data: { name: 'Edukacja i uczelnia', slug: 'uczelnia' } });
 
   console.log('Dodawanie słownika PJM...');
-  const signs = await prisma.sign.createMany({
-    data: [
+  const signRows = [
       // Podstawy
       { name: 'Dzień dobry', description: 'Uniwersalne powitanie.', video_url: 'podstawy_dzien_dobry.mp4', category_id: podstawy.id },
       { name: 'Do widzenia', description: 'Pożegnanie.', video_url: 'podstawy_do_widzenia.mp4', category_id: podstawy.id },
@@ -48,6 +81,7 @@ async function main() {
       { name: 'Smutek', description: 'Stan przygnębienia.', video_url: 'emocje_smutek.mp4', category_id: emocje.id },
       { name: 'Złość', description: 'Silna irytacja.', video_url: 'emocje_zlosc.mp4', category_id: emocje.id },
       { name: 'Strach', description: 'Obawa przed zagrożeniem.', video_url: 'emocje_strach.mp4', category_id: emocje.id },
+      { name: 'Zdziwienie', description: 'Reakcja na coś nieoczekiwanego.', video_url: 'emocje_zdziwienie.mp4', category_id: emocje.id },
       { name: 'Zmęczenie', description: 'Brak sił, wyczerpanie.', video_url: 'emocje_zmeczenie.mp4', category_id: emocje.id },
 
       // Czas
@@ -63,7 +97,15 @@ async function main() {
       { name: 'Wykład', description: 'Zajęcia teoretyczne prowadzone przez wykładowcę.', video_url: 'uczelnia_wyklad.mp4', category_id: uczelnia.id },
       { name: 'Egzamin', description: 'Sprawdzian wiedzy.', video_url: 'uczelnia_egzamin.mp4', category_id: uczelnia.id },
       { name: 'Dziekanat', description: 'Biuro obsługi studentów.', video_url: 'uczelnia_dziekanat.mp4', category_id: uczelnia.id },
-    ],
+  ];
+
+  // Literówka w kluczu FACIAL_EXPRESSIONS → przerwij seed zamiast cicho pominąć opis.
+  const signNames = new Set(signRows.map((s) => s.name));
+  const unknownSigns = Object.keys(FACIAL_EXPRESSIONS).filter((n) => !signNames.has(n));
+  if (unknownSigns.length) throw new Error(`FACIAL_EXPRESSIONS: brak znaków ${unknownSigns.join(', ')}`);
+
+  const signs = await prisma.sign.createMany({
+    data: signRows.map((s) => ({ ...s, facialExpression: FACIAL_EXPRESSIONS[s.name] ?? null })),
   });
 
   console.log('Dodawanie alfabetu PJM...');
@@ -73,13 +115,15 @@ async function main() {
   ];
 
   // Literówka w MOVING_LETTERS → przerwij seed zamiast cicho zapisać złe dane.
-  const unknown = [...MOVING_LETTERS].filter((l) => !polishAlphabet.includes(l));
-  if (unknown.length) throw new Error(`MOVING_LETTERS zawiera nieznane litery: ${unknown.join(', ')}`);
+  const unknown = [...MOVING_LETTERS, ...Object.keys(ALPHABET_HANDSHAPES)].filter((l) => !polishAlphabet.includes(l));
+  if (unknown.length) throw new Error(`Nieznane litery w MOVING_LETTERS / ALPHABET_HANDSHAPES: ${unknown.join(', ')}`);
 
-  const alphabetData = polishAlphabet.map((letter) => ({
+  const alphabetData = polishAlphabet.map((letter, index) => ({
     letter,
     video_url: `alfabet_${letter.toLowerCase()}.mp4`,
     requiresMovement: MOVING_LETTERS.has(letter),
+    handshape: ALPHABET_HANDSHAPES[letter] ?? null,
+    sortOrder: index + 1,
   }));
 
   await prisma.alphabet.createMany({
@@ -87,9 +131,14 @@ async function main() {
   });
 
   const moving = alphabetData.filter((a) => a.requiresMovement).length;
+  const described = alphabetData.filter((a) => a.handshape).length;
+  const withFace = Object.keys(FACIAL_EXPRESSIONS).length;
   console.log(
     `✅ Baza zasilona: ${signs.count} znaków, ${polishAlphabet.length} liter ` +
       `(${moving} z ruchem, ${polishAlphabet.length - moving} statycznych).`,
+  );
+  console.log(
+    `   Opisy dłoni: ${described}/${polishAlphabet.length} liter · mimika: ${withFace} znaków.`,
   );
 }
 

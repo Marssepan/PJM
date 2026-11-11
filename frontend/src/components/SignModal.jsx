@@ -4,6 +4,7 @@ import { useApp } from '../state/AppContext.jsx';
 import { useData } from '../state/DataContext.jsx';
 import useFocusTrap from '../hooks/useFocusTrap.js';
 import VideoPlayer from './VideoPlayer.jsx';
+import SignDetails from './SignDetails.jsx';
 import { IconArrow, IconBack, IconClose } from './Icons.jsx';
 
 const ease = [0.22, 1, 0.36, 1];
@@ -106,6 +107,7 @@ export default function SignModal({ sign }) {
               <h2 id={titleId} className="modal__title">{sign.name}</h2>
               {sign.meaning && <p className="modal__meaning" lang="en">{sign.meaning}</p>}
               <p id={descId} className="modal__desc">{sign.description || 'Brak opisu.'}</p>
+              <SignDetails sign={sign} />
             </div>
           </motion.div>
         </AnimatePresence>
