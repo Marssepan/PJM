@@ -6,6 +6,7 @@ const links = [
   { path: '/', label: 'Start', match: (p) => p === '/' || p.startsWith('/kategoria') },
   { path: '/slownik', label: 'Słownik', match: (p) => p === '/slownik' },
   { path: '/alfabet', label: 'Alfabet', match: (p) => p === '/alfabet' },
+  { path: '/nauka', label: 'Nauka', match: (p) => p.startsWith('/nauka') },
 ];
 
 export default function Header() {

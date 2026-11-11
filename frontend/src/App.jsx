@@ -12,6 +12,9 @@ import SearchResults from './pages/SearchResults.jsx';
 import NotFound from './pages/NotFound.jsx';
 import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
 import Terms from './pages/Terms.jsx';
+import LearnHub from './pages/learn/LearnHub.jsx';
+import FlashcardSession from './pages/learn/FlashcardSession.jsx';
+import QuizSession from './pages/learn/QuizSession.jsx';
 import { useData } from './state/DataContext.jsx';
 
 const ease = [0.22, 1, 0.36, 1];
@@ -23,6 +26,14 @@ function resolve(path, data) {
   if (path === '/szukaj') return { key: 'szukaj', title: 'Wyniki wyszukiwania', el: <SearchResults /> };
   if (path === '/polityka-prywatnosci') return { key: 'privacy', title: 'Polityka prywatności', el: <PrivacyPolicy /> };
   if (path === '/regulamin') return { key: 'terms', title: 'Regulamin', el: <Terms /> };
+  if (path === '/nauka') return { key: 'learn', title: 'Nauka', el: <LearnHub /> };
+  const learn = path.match(/^\/nauka\/(fiszki|quiz)\/([\w-]+)$/);
+  if (learn) {
+    const [, mode, deck] = learn;
+    return mode === 'fiszki'
+      ? { key: `fiszki-${deck}`, title: 'Fiszki', el: <FlashcardSession deckId={deck} /> }
+      : { key: `quiz-${deck}`, title: 'Quiz', el: <QuizSession deckId={deck} /> };
+  }
   const m = path.match(/^\/kategoria\/([\w-]+)$/);
   // Podczas ładowania/błędu nie wiemy jeszcze, czy kategoria istnieje — decyduje strona Category.
   if (m && (data.status !== 'ready' || data.categoriesById[m[1]])) {
