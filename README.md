@@ -19,7 +19,6 @@ PJM/
 │  ├─ prisma/seed.ts          categories, signs, alphabet
 │  └─ public/videos/          ← PUT YOUR .mp4 FILES HERE
 ├─ docker-compose.yml         local PostgreSQL
-├─ render.yaml                backend hosting config (Render)
 ├─ .github/workflows/         frontend hosting (GitHub Pages)
 └─ DEPLOY.md                  how to publish online
 ```
@@ -79,4 +78,4 @@ the old Prisma client in memory.
 
 ## Publish online
 
-See **[DEPLOY.md](DEPLOY.md)** — GitHub Pages + Render + Neon, all free.
+See **[DEPLOY.md](DEPLOY.md)** — GitHub Pages + Vercel + Neon, all free.

@@ -14,7 +14,7 @@
  *   helmet               → secure HTTP headers (CORP disabled so the Vite app can load .mp4 files)
  *   express-rate-limit   → 200 requests / 15 min per IP on /api/* (videos and /api/health exempt)
  *
- * Run:  npm run dev (tsx watch, auto-restart)   ·   production: npm start (tsx src/index.ts)
+ * Run:  npm run dev (tsx watch, auto-restart)   ·   production: Vercel (imports the default export)
  *
  * Prisma models:
  *   Category { id (uuid), name @unique, slug @unique, signs Sign[] }
@@ -314,8 +314,16 @@ async function main(): Promise<void> {
   process.on('SIGTERM', () => void shutdown('SIGTERM'));
 }
 
-main().catch(async (err) => {
-  console.error('Failed to start server:', err);
-  await prisma.$disconnect();
-  process.exit(1);
-});
+/**
+ * Vercel imports `app` and runs it as a serverless function (no listen(), no signals).
+ * Everywhere else (local dev) we start a normal HTTP server.
+ */
+export default app;
+
+if (!process.env.VERCEL) {
+  main().catch(async (err) => {
+    console.error('Failed to start server:', err);
+    await prisma.$disconnect();
+    process.exit(1);
+  });
+}
