@@ -1,0 +1,67 @@
+# =============================================================================
+# PJM Dictionary — local PostgreSQL database
+# -----------------------------------------------------------------------------
+# Strictly local, offline development setup for the PJM (Polish Sign Language)
+# learning app (React/Vite frontend + Node.js backend).
+#
+# Usage:
+#   docker compose up -d        # start database in background
+#   docker compose logs -f db   # follow logs
+#   docker compose down         # stop container (data is KEPT)
+#   docker compose down -v      # stop + remove named volumes (bind mount below is NOT removed)
+#
+# Connection string for the Node.js backend (.env):
+#   DATABASE_URL=postgresql://admin:root@localhost:5432/pjm_dictionary
+#
+# Reset database completely: stop container, then delete ./postgres_data
+#
+# NOTE: No `version:` key — it is obsolete in Docker Compose v2.
+# =============================================================================
+
+services:
+  db:
+    # Official PostgreSQL 16 on Alpine Linux — small image (~90 MB), stable LTS line.
+    # Pin the major version: data directory is NOT compatible across major versions.
+    # (Do not bump to 18+ without changing the volume path — PG 18 images moved
+    #  the data directory to /var/lib/postgresql.)
+    image: postgres:16-alpine
+    container_name: pjm_postgres
+
+    # Restart automatically after crash or Docker/host restart,
+    # unless the container was stopped manually (`docker compose stop`).
+    restart: unless-stopped
+
+    # Local development credentials — NOT for production use.
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: pjm_dictionary
+      # UTF-8 so Polish characters (ą, ę, ł, ż, ...) in sign names sort and store correctly.
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8"
+      TZ: Europe/Warsaw
+
+    # host:container — backend connects to localhost:5432.
+    # Tip: use "127.0.0.1:5432:5432" to make the DB reachable only from this
+    # machine (recommended with weak dev credentials on shared networks).
+    ports:
+      - "5432:5432"
+
+    # Data persistence (critical): bind mount to a folder next to this file.
+    # All tables (categories, signs, video paths) survive container restarts,
+    # `docker compose down`, and image re-pulls.
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+      # Optional: *.sql / *.sh files in ./db/init run ONCE on first start
+      # (only when ./postgres_data is empty) — handy for schema + seed data.
+      # - ./db/init:/docker-entrypoint-initdb.d:ro
+
+    # Lets the backend wait until Postgres actually accepts connections:
+    #   depends_on:
+    #     db:
+    #       condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d pjm_dictionary"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s

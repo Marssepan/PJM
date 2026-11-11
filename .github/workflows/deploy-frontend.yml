@@ -1,0 +1,89 @@
+# =============================================================================
+# Frontend → GitHub Pages
+# -----------------------------------------------------------------------------
+# Builds the Vite app from /frontend and publishes it together with the .mp4
+# files from the backend, so videos are served by GitHub Pages (fast CDN, no
+# waiting for the sleeping free backend).
+#
+# One-time setup in the GitHub repo:
+#   Settings → Pages → Source: "GitHub Actions"
+#   Settings → Secrets and variables → Actions → Variables → New variable:
+#     API_URL = https://<your-service>.onrender.com     (no trailing slash)
+# =============================================================================
+name: Deploy frontend to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - 'backend/public/videos/**'
+      - 'backend/src/public/videos/**'
+      - '.github/workflows/deploy-frontend.yml'
+  workflow_dispatch: # manual "Run workflow" button
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Fail if API_URL variable is missing
+        if: ${{ vars.API_URL == '' }}
+        run: |
+          echo "::error::Set repository variable API_URL (Settings → Secrets and variables → Actions → Variables)."
+          exit 1
+
+      # npm install (not npm ci) → works with or without a committed package-lock.json
+      - run: npm install
+
+      - name: Build
+        run: npm run build
+        env:
+          # Pages URL is https://<user>.github.io/<repo>/ → assets need the /<repo>/ prefix.
+          VITE_BASE: /${{ github.event.repository.name }}/
+          VITE_API_URL: ${{ vars.API_URL }}
+          VITE_VIDEO_URL: /${{ github.event.repository.name }}/videos
+
+      - name: Copy videos from backend into the site
+        run: |
+          for dir in ../backend/public/videos ../backend/src/public/videos; do
+            if [ -d "$dir" ]; then
+              mkdir -p dist/videos
+              cp -R "$dir"/. dist/videos/
+              echo "Copied videos from $dir"
+              find dist/videos -name '*.mp4' | wc -l | xargs echo "MP4 files:"
+              exit 0
+            fi
+          done
+          echo "::warning::No backend videos folder found — site deployed without videos."
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,33 @@
+# =============================================================================
+# Render Blueprint — PJM API (Express + Prisma), free plan
+# Render → New → Blueprint → pick this repo. Secrets marked `sync: false`
+# are asked for in the dashboard during setup (never committed).
+# =============================================================================
+services:
+  - type: web
+    name: pjm-api
+    runtime: node
+    plan: free
+    region: frankfurt # closest to Poland; pick the same region as the Neon database
+    rootDir: backend
+    # Free plan has no pre-deploy step → migrations run at the end of the build.
+    # --include=dev: Prisma CLI is a devDependency; NODE_ENV=production would skip it.
+    # The server runs TypeScript directly with tsx (no separate compile step).
+    buildCommand: npm install --include=dev && npx prisma generate && npx prisma migrate deploy
+    startCommand: npm start
+    autoDeploy: true
+    # No healthCheckPath on purpose: /api/health queries the DB, and frequent checks
+    # would keep the Neon database awake and burn free compute hours.
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NODE_ENV
+        value: production
+      - key: TRUST_PROXY
+        value: "1" # Render puts one proxy in front of the app → real client IP for rate limiting
+      - key: DATABASE_URL
+        sync: false # Neon pooled connection string (host contains -pooler)
+      - key: DIRECT_URL
+        sync: false # Neon direct connection string (no -pooler) — used by prisma migrate
+      - key: CORS_ORIGIN
+        sync: false # https://<github-user>.github.io  (origin only, no /repo path)
