@@ -162,7 +162,7 @@ app.get('/api/health', async (_req: Request, res: Response<{ status: string } | 
 app.get('/api/categories', async (_req: Request, res: Response, next: NextFunction) => {
   try {
     const categories = await prisma.category.findMany({
-      orderBy: { name: 'asc' },
+      orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
       include: {
         signs: { orderBy: { name: 'asc' } },
       },
@@ -178,6 +178,9 @@ type SignSearchRow = {
   id: string; // UUID
   name: string;
   description: string | null;
+  slug: string | null;
+  kind: 'WORD' | 'PHRASE';
+  facialExpression: string | null;
   video_url: string;
   category_id: string; // UUID
   category: { id: string; name: string; slug: string };
@@ -218,6 +221,9 @@ app.get(
           s.id,
           s.name,
           s.description,
+          s.slug,
+          s.kind,
+          s.facial_expression AS "facialExpression",
           s.video_url,
           s.category_id,
           json_build_object('id', c.id, 'name', c.name, 'slug', c.slug) AS category,
@@ -248,8 +254,9 @@ app.get(
 app.get('/api/alphabet', async (_req: Request, res: Response, next: NextFunction) => {
   try {
     const letters = await prisma.alphabet.findMany();
-    // Sorted in JS: DB default collation (en_US.utf8) does not guarantee Polish order.
-    letters.sort((a, b) => plCollator.compare(a.letter, b.letter));
+    // sortOrder from the seed decides; Polish collation is the fallback for equal values
+    // (DB default collation en_US.utf8 does not guarantee Polish order).
+    letters.sort((a, b) => a.sortOrder - b.sortOrder || plCollator.compare(a.letter, b.letter));
     res.json(letters);
   } catch (err) {
     next(err);

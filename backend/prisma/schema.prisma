@@ -14,20 +14,42 @@ datasource db {
   extensions = [unaccent]
 }
 
+/// Feature 4: a dictionary entry is either a single word or a whole everyday phrase.
+enum SignKind {
+  WORD
+  PHRASE
+}
+
 model Category {
-  id    String @id @default(uuid())
-  name  String @unique
-  slug  String @unique
-  signs Sign[]
+  id          String  @id @default(uuid())
+  name        String  @unique
+  slug        String  @unique
+  /// Short description shown on the category card / page header.
+  description String?
+  /// Display order on the home page (lower = first). Avoids relying on alphabetical order.
+  sortOrder   Int     @default(0) @map("sort_order")
+  signs       Sign[]
 }
 
 model Sign {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  video_url   String
-  category_id String
-  category    Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  id               String   @id @default(uuid())
+  /// Stable, human-readable id (e.g. "dzien-dobry"). Survives re-seeding, so it is used
+  /// for shareable links and as the key for learning progress stored in the browser.
+  /// Optional for now so the migration works on existing rows — the seed fills it in.
+  slug             String?  @unique
+  /// Feature 4: WORD (single sign) or PHRASE (e.g. "Gdzie jest toaleta?").
+  kind             SignKind @default(WORD)
+  name             String
+  description      String?
+  /// Feature 3: required facial expression / non-manual markers (mimika),
+  /// e.g. "Brwi uniesione, oczy szeroko otwarte". Shown only when present.
+  facialExpression String?  @map("facial_expression")
+  video_url        String
+  category_id      String
+  category         Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
+
+  @@index([category_id])
+  @@index([kind])
 }
 
 model Alphabet {
@@ -36,4 +58,10 @@ model Alphabet {
   video_url        String
   /// true → letter is fingerspelled with hand movement (dynamic sign); false → static handshape.
   requiresMovement Boolean @default(false) @map("requires_movement")
+  /// Feature 2: hand shape / position, e.g. "Dłoń zaciśnięta w pięść, kciuk przylega do boku palca wskazującego".
+  handshape        String?
+  /// Feature 2: movement description — only for letters with requiresMovement = true.
+  movement         String?
+  /// Explicit order in the fingerspelling alphabet (A=1, Ą=2, …).
+  sortOrder        Int     @default(0) @map("sort_order")
 }

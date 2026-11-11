@@ -10,6 +10,8 @@ import Dictionary from './pages/Dictionary.jsx';
 import Alphabet from './pages/Alphabet.jsx';
 import SearchResults from './pages/SearchResults.jsx';
 import NotFound from './pages/NotFound.jsx';
+import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
+import Terms from './pages/Terms.jsx';
 import { useData } from './state/DataContext.jsx';
 
 const ease = [0.22, 1, 0.36, 1];
@@ -19,6 +21,8 @@ function resolve(path, data) {
   if (path === '/slownik') return { key: 'slownik', title: 'Słownik', el: <Dictionary /> };
   if (path === '/alfabet') return { key: 'alfabet', title: 'Alfabet PJM', el: <Alphabet /> };
   if (path === '/szukaj') return { key: 'szukaj', title: 'Wyniki wyszukiwania', el: <SearchResults /> };
+  if (path === '/polityka-prywatnosci') return { key: 'privacy', title: 'Polityka prywatności', el: <PrivacyPolicy /> };
+  if (path === '/regulamin') return { key: 'terms', title: 'Regulamin', el: <Terms /> };
   const m = path.match(/^\/kategoria\/([\w-]+)$/);
   // Podczas ładowania/błędu nie wiemy jeszcze, czy kategoria istnieje — decyduje strona Category.
   if (m && (data.status !== 'ready' || data.categoriesById[m[1]])) {
