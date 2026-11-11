@@ -8,8 +8,8 @@ export const site = {
   url: 'https://marssepan.github.io/PJM/',
 
   /** Administrator danych / Usługodawca (osoba fizyczna). */
-  owner: '[Imię i nazwisko]',
-  email: '[adres e-mail kontaktowy]',
+  owner: 'Tomasz Frankiewicz',
+  email: 'tomaszfrankiewicz296@gmail.com',
 
   /** Kontekst projektu. */
   project: 'projekt inżynierski realizowany w [nazwa uczelni]',
