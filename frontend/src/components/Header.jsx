@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useApp } from '../state/AppContext.jsx';
 import SearchBox from './SearchBox.jsx';
+import { duration, ease } from '../styles/motion.js';
 
 const links = [
   { path: '/', label: 'Start', match: (p) => p === '/' || p.startsWith('/kategoria') },
@@ -32,7 +33,7 @@ export default function Header() {
                       <motion.span
                         layoutId="nav-indicator"
                         className="nav__indicator"
-                        transition={{ type: 'spring', stiffness: 380, damping: 34 }}
+                        transition={{ duration: duration.slow, ease }}
                       />
                     )}
                   </a>

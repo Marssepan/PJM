@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useApp } from '../state/AppContext.jsx';
 import { useData } from '../state/DataContext.jsx';
 import { IconArrow } from './Icons.jsx';
+import { ease } from '../styles/motion.js';
 
 const container = {
   hidden: {},
@@ -9,7 +10,7 @@ const container = {
 };
 const item = {
   hidden: { opacity: 0, y: 10 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease } },
 };
 
 export function SignCard({ sign, showCategory = false }) {

@@ -9,9 +9,9 @@ import Flashcard from '../../components/learn/Flashcard.jsx';
 import SessionSummary from '../../components/learn/SessionSummary.jsx';
 import { ErrorState, LoadingState } from '../../components/StatusViews.jsx';
 import NotFound from '../NotFound.jsx';
+import { ease } from '../../styles/motion.js';
 
 const SESSION_SIZE = 10;
-const ease = [0.22, 1, 0.36, 1];
 
 const GRADES = [
   { id: 'again', label: 'Nie wiem', hint: 'wróci jeszcze w tej sesji' },

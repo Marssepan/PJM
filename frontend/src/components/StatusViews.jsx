@@ -3,8 +3,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useData } from '../state/DataContext.jsx';
 import { API_BASE } from '../api/client.js';
 import { IconRestart } from './Icons.jsx';
+import { ease } from '../styles/motion.js';
 
-const ease = [0.22, 1, 0.36, 1];
 
 /**
  * Szkielety ładowania w kształcie docelowej treści — brak „skoku” układu.

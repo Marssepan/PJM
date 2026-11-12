@@ -2,9 +2,10 @@ import { motion } from 'framer-motion';
 import { useApp } from '../state/AppContext.jsx';
 import { useData } from '../state/DataContext.jsx';
 import { ErrorState, LoadingState } from '../components/StatusViews.jsx';
+import { ease } from '../styles/motion.js';
 
 const list = { hidden: {}, show: { transition: { staggerChildren: 0.02 } } };
-const item = { hidden: { opacity: 0, scale: 0.96 }, show: { opacity: 1, scale: 1, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } } };
+const item = { hidden: { opacity: 0, scale: 0.96 }, show: { opacity: 1, scale: 1, transition: { duration: 0.4, ease } } };
 
 export default function Alphabet() {
   const { openSign } = useApp();

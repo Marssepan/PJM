@@ -6,8 +6,8 @@ import { deckStats, MASTERED_BOX } from '../../learn/progress.js';
 import { getDecks } from '../../learn/decks.js';
 import { ErrorState, LoadingState } from '../../components/StatusViews.jsx';
 import { IconArrow } from '../../components/Icons.jsx';
+import { ease } from '../../styles/motion.js';
 
-const ease = [0.22, 1, 0.36, 1];
 const list = { hidden: {}, show: { transition: { staggerChildren: 0.04 } } };
 const item = { hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease } } };
 

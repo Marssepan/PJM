@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { IconArrow, IconRestart } from '../Icons.jsx';
+import { ease } from '../../styles/motion.js';
 
 /** Podsumowanie sesji fiszek / quizu. Fokus trafia na nagłówek, żeby czytnik od razu czytał wynik. */
 export default function SessionSummary({ title, lead, stats, onRestart, restartLabel, altHref, altLabel, children }) {
@@ -16,7 +17,7 @@ export default function SessionSummary({ title, lead, stats, onRestart, restartL
       aria-labelledby="summary-title"
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.5, ease }}
     >
       <p className="eyebrow">Podsumowanie</p>
       <h1 id="summary-title" ref={headingRef} tabIndex={-1} className="page-title">{title}</h1>

@@ -3,8 +3,8 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import VideoPlayer from '../VideoPlayer.jsx';
 import SignDetails from '../SignDetails.jsx';
 import { answerOf } from '../../learn/decks.js';
+import { duration, ease } from '../../styles/motion.js';
 
-const ease = [0.22, 1, 0.36, 1];
 
 /**
  * Fiszka z animacją 3D (rotateY + backface-visibility).
@@ -97,7 +97,7 @@ export default function Flashcard({ sign, flipped, direction }) {
         className="flash__inner"
         initial={false}
         animate={{ rotateY: flipped ? 180 : 0 }}
-        transition={{ duration: 0.7, ease }}
+        transition={{ duration: duration.flip, ease }}
       >
         <div ref={frontRef} className="flash__face flash__face--front" aria-hidden={flipped}>
           {front}

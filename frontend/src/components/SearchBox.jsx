@@ -4,6 +4,7 @@ import { useApp } from '../state/AppContext.jsx';
 import { useData } from '../state/DataContext.jsx';
 import useSignSearch from '../hooks/useSignSearch.js';
 import { IconSearch, IconClose } from './Icons.jsx';
+import { ease } from '../styles/motion.js';
 
 const MAX_SUGGESTIONS = 6;
 const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform);
@@ -165,7 +166,7 @@ export default function SearchBox() {
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.2, ease }}
           >
             <ul id={listId} role="listbox" aria-label="Podpowiedzi" aria-busy={searching} className="search__list">
               {suggestions.map((s, i) => (

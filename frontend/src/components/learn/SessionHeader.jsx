@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { IconBack } from '../Icons.jsx';
+import { ease } from '../../styles/motion.js';
 
 /** Pasek sesji: powrót, tytuł, licznik i postęp sesji. */
 export default function SessionHeader({ mode, title, current, total, children }) {
@@ -26,7 +27,7 @@ export default function SessionHeader({ mode, title, current, total, children })
           aria-valuenow={current}
           aria-valuetext={`${current} z ${total}`}
         >
-          <motion.span className="pbar__fill" animate={{ width: `${pct}%` }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} />
+          <motion.span className="pbar__fill" animate={{ width: `${pct}%` }} transition={{ duration: 0.5, ease }} />
         </div>
         <span className="session-head__count" aria-hidden="true">
           {String(Math.min(current + 1, total)).padStart(2, '0')} / {String(total).padStart(2, '0')}

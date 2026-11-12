@@ -11,10 +11,10 @@ import VideoPlayer from '../../components/VideoPlayer.jsx';
 import { ErrorState, LoadingState } from '../../components/StatusViews.jsx';
 import { IconArrow, IconClose } from '../../components/Icons.jsx';
 import NotFound from '../NotFound.jsx';
+import { ease } from '../../styles/motion.js';
 
 const QUIZ_SIZE = 10;
 const OPTIONS = 4;
-const ease = [0.22, 1, 0.36, 1];
 
 const IconCheck = (p) => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" focusable="false" {...p}>

@@ -16,8 +16,8 @@ import LearnHub from './pages/learn/LearnHub.jsx';
 import FlashcardSession from './pages/learn/FlashcardSession.jsx';
 import QuizSession from './pages/learn/QuizSession.jsx';
 import { useData } from './state/DataContext.jsx';
+import { duration, ease, transition } from './styles/motion.js';
 
-const ease = [0.22, 1, 0.36, 1];
 
 function resolve(path, data) {
   if (path === '/') return { key: 'home', title: 'Start', el: <Home /> };
@@ -67,7 +67,7 @@ export default function App() {
   }, [page.key]);
 
   return (
-    <MotionConfig reducedMotion="user">
+    <MotionConfig reducedMotion="user" transition={transition}>
       <a className="skip-link" href="#tresc" onClick={(e) => { e.preventDefault(); mainRef.current?.focus(); }}>
         Przejdź do treści
       </a>
@@ -76,10 +76,10 @@ export default function App() {
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={page.key}
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.45, ease }}
+            transition={{ duration: duration.slow, ease }}
           >
             {page.el}
           </motion.div>

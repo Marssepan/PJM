@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { site } from '../config/site.js';
+import { ease } from '../styles/motion.js';
 
-const ease = [0.22, 1, 0.36, 1];
 
 function formatDate(iso) {
   return new Intl.DateTimeFormat('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(iso));

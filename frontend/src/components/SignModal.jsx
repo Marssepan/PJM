@@ -6,8 +6,8 @@ import useFocusTrap from '../hooks/useFocusTrap.js';
 import VideoPlayer from './VideoPlayer.jsx';
 import SignDetails from './SignDetails.jsx';
 import { IconArrow, IconBack, IconClose } from './Icons.jsx';
+import { duration, ease } from '../styles/motion.js';
 
-const ease = [0.22, 1, 0.36, 1];
 
 /** Zamienia znak w otwartym oknie bez dokładania wpisu w historii — „Wstecz” nadal zamyka okno. */
 function replaceSign(id) {
@@ -80,10 +80,10 @@ export default function SignModal({ sign }) {
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={descId}
-        initial={{ opacity: 0, y: 32, scale: 0.985 }}
+        initial={{ opacity: 0, y: 40, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 24, scale: 0.985 }}
-        transition={{ duration: 0.5, ease }}
+        transition={{ duration: duration.slow, ease }}
       >
         <div className="modal__bar">
           <p className="eyebrow">{groupName}</p>
