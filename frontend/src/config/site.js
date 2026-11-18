@@ -8,14 +8,14 @@ export const site = {
   url: 'https://marssepan.github.io/PJM/',
 
   /** Administrator danych / Usługodawca (osoba fizyczna). */
-  owner: 'Tomasz Frankiewicz',
-  email: 'tomaszfrankiewicz296@gmail.com',
+  owner: 'Wiktoria Zachar',
+  email: 'wiktoriaz0804@gmail.com',
 
   /** Kontekst projektu. */
-  project: 'projekt inżynierski realizowany w [nazwa uczelni]',
+  project: 'projekt inżynierski realizowany w WSB Merito',
 
   /** Data ostatniej aktualizacji dokumentów (RRRR-MM-DD). */
-  legalUpdated: '2026-11-11',
+  legalUpdated: '2026-11-18',
 
   /** Dostawcy infrastruktury — wymienieni w Polityce prywatności. */
   providers: [
